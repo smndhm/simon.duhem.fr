@@ -1,7 +1,38 @@
 class LcsCnvs {
   constructor(window) {
-    const nbVertices = 50;
+    this.around = 50;
+    this.vertices = {
+      limit: 50,
+      list: [],
+      themes: [
+        "#f72585",
+        "#b5179e",
+        "#7209b7",
+        "#560bad",
+        "#480ca8",
+        "#3a0ca3",
+        "#3f37c9",
+        "#4361ee",
+        "#4895ef",
+        "#4cc9f0",
+      ],
+    };
+    this.polygons = [];
+
     this.window = window;
+    ["mousemove", "touchmove"].forEach((eventType) => {
+      this.window.addEventListener(
+        eventType,
+        (event) => {
+          this.addVertex({
+            x: event.pageX || event.touches[0].pageX,
+            y: event.pageY || event.touches[0].pageY,
+          });
+        },
+        false
+      );
+    });
+
     this.document = this.window.document;
 
     this.canvas = this.document.createElement("canvas");
@@ -10,64 +41,6 @@ class LcsCnvs {
     this.canvas.id = "lcs-cnvs";
 
     this.ctx = this.canvas.getContext("2d");
-
-    // this.window.addEventListener(
-    //     "mousemove",
-    //     (event) => {
-    //         console.log({ x: event.pageX, y: event.pageY });
-    //     },
-    //     false
-    // );
-    //const verticesLimit = 50;
-    let vertices = [];
-    let polygons = [];
-
-    setInterval(() => {
-      const vertex = this.getRandomVertex([
-        {
-          x: 0,
-          y: 0,
-        },
-        {
-          x: this.canvas.width,
-          y: this.canvas.height,
-        },
-      ]);
-
-      if (vertices.length >= 2) {
-        const closestVertices = this.getClosestVertices(
-          [...vertices],
-          vertex,
-          2
-        );
-        polygons.push([vertex].concat(closestVertices));
-      }
-
-      vertices.push(vertex);
-      vertices = vertices.slice(-nbVertices);
-
-      polygons = polygons.filter((polygon) =>
-        polygon.some((pVertex) =>
-          vertices.some(
-            (vVertex) => pVertex.x === vVertex.x && pVertex.y === vVertex.y
-          )
-        )
-      );
-
-      this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-
-      for (const vertices of polygons) {
-        this.ctx.beginPath();
-        this.ctx.moveTo(vertices[0].x, vertices[0].y);
-        for (let i = 1; i < vertices.length; i++) {
-          this.ctx.lineTo(vertices[i].x, vertices[i].y);
-        }
-        this.ctx.closePath();
-        this.ctx.stroke();
-      }
-    }, 50);
-
-    this.document.body.append(this.canvas);
   }
 
   /**
@@ -116,6 +89,71 @@ class LcsCnvs {
         );
       })
       .slice(0, count);
+  }
+
+  /**
+   *
+   * @param {*} array
+   */
+  getRandomArrayValue(array) {
+    return array[Math.floor(Math.random() * array.length)];
+  }
+
+  /**
+   *
+   * @param {*} position
+   */
+  addVertex(position) {
+    const vertex = this.getRandomVertex([
+      {
+        x: position.x - this.around,
+        y: position.y - this.around,
+      },
+      {
+        x: position.x + this.around,
+        y: position.y + this.around,
+      },
+    ]);
+
+    if (this.vertices.list.length >= 2) {
+      const closestVertices = this.getClosestVertices(
+        [...this.vertices.list],
+        vertex,
+        2
+      );
+      this.polygons.push({
+        vertices: [vertex].concat(closestVertices),
+        color: this.getRandomArrayValue(this.vertices.themes),
+      });
+    }
+
+    this.vertices.list.push(vertex);
+    this.vertices.list = this.vertices.list.slice(-this.vertices.limit);
+
+    this.polygons = this.polygons.filter((polygon) =>
+      polygon.vertices.some((pVertex) =>
+        this.vertices.list.some(
+          (vVertex) => pVertex.x === vVertex.x && pVertex.y === vVertex.y
+        )
+      )
+    );
+
+    this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+
+    for (const { vertices, color } of this.polygons) {
+      this.ctx.beginPath();
+      this.ctx.moveTo(vertices[0].x, vertices[0].y);
+      for (let i = 1; i < vertices.length; i++) {
+        this.ctx.lineTo(vertices[i].x, vertices[i].y);
+      }
+      this.ctx.closePath();
+      this.ctx.fillStyle = color;
+      this.ctx.strokeStyle = color;
+      this.ctx.fill();
+      this.ctx.stroke();
+    }
+
+    this.document.body.append(this.canvas);
   }
 }
 
