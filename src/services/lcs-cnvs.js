@@ -5,29 +5,42 @@ class LcsCnvs {
       limit: 50,
       list: [],
       themes: [
-        "#f72585",
-        "#b5179e",
-        "#7209b7",
-        "#560bad",
-        "#480ca8",
-        "#3a0ca3",
-        "#3f37c9",
-        "#4361ee",
-        "#4895ef",
-        "#4cc9f0",
+        {
+          colors: [
+            "#f72585",
+            "#b5179e",
+            "#7209b7",
+            "#560bad",
+            "#480ca8",
+            "#3a0ca3",
+            "#3f37c9",
+            "#4361ee",
+            "#4895ef",
+            "#4cc9f0",
+          ],
+        },
       ],
     };
     this.polygons = [];
 
     this.window = window;
-    ["mousemove", "touchmove"].forEach((eventType) => {
-      this.window.addEventListener(
-        eventType,
-        (event) => {
-          this.addVertex({
-            x: event.pageX || event.touches[0].pageX,
-            y: event.pageY || event.touches[0].pageY,
-          });
+
+    this.window.onresize = () => {
+      this.canvas.width = this.window.innerWidth;
+      this.canvas.height = this.window.innerHeight;
+    };
+
+    let interval;
+
+    clearInterval(interval);
+          const vertex = {
+            x: event.pageX || (event.touches && event.touches[0].pageX) || 0,
+            y: event.pageY || (event.touches && event.touches[0].pageY) || 0,
+          };
+          this.addVertex(vertex);
+          interval = setInterval(() => {
+            this.addVertex(vertex);
+          }, 10);
         },
         false
       );
@@ -56,11 +69,21 @@ class LcsCnvs {
    *
    * @param {*} area
    */
-  getRandomVertex(area) {
-    return {
-      x: this.getRandomNumberBetween(area[0].x, area[1].x),
-      y: this.getRandomNumberBetween(area[0].y, area[1].y),
-    };
+  getRandomVertex(position, distance) {
+    let vertex;
+    do {
+      vertex = {
+        x: this.getRandomNumberBetween(
+          position.x - distance,
+          position.x + distance
+        ),
+        y: this.getRandomNumberBetween(
+          position.y - distance,
+          position.y + distance
+        ),
+      };
+    } while (this.getVerticesDistance(position, vertex) > distance);
+    return vertex;
   }
 
   /**
@@ -69,7 +92,7 @@ class LcsCnvs {
    * @param {*} vertexB
    */
   getVerticesDistance(vertexA, vertexB) {
-    return (
+    return Math.sqrt(
       Math.pow(vertexA.x - vertexB.x, 2) + Math.pow(vertexA.y - vertexB.y, 2)
     );
   }
@@ -104,16 +127,13 @@ class LcsCnvs {
    * @param {*} position
    */
   addVertex(position) {
-    const vertex = this.getRandomVertex([
+    const vertex = this.getRandomVertex(
       {
-        x: position.x - this.around,
-        y: position.y - this.around,
+        x: position.x,
+        y: position.y,
       },
-      {
-        x: position.x + this.around,
-        y: position.y + this.around,
-      },
-    ]);
+      this.around
+    );
 
     if (this.vertices.list.length >= 2) {
       const closestVertices = this.getClosestVertices(
@@ -123,7 +143,7 @@ class LcsCnvs {
       );
       this.polygons.push({
         vertices: [vertex].concat(closestVertices),
-        color: this.getRandomArrayValue(this.vertices.themes),
+        color: this.getRandomArrayValue(this.vertices.themes[0].colors),
       });
     }
 

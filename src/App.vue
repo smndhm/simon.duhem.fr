@@ -95,7 +95,7 @@ main {
   text-align: center;
   // Display
   // display: none; // TODO remove this line for canvas test
-  margin: 0 1rem;
+  margin: 0 3rem;
   // Decoration
 }
 
