@@ -32,11 +32,7 @@ class LcsCnvs {
 
     let interval;
 
-    ["mousemove", "touchmove"].forEach((eventType) => {
-      this.window.addEventListener(
-        eventType,
-        (event) => {
-          clearInterval(interval);
+    clearInterval(interval);
           const vertex = {
             x: event.pageX || (event.touches && event.touches[0].pageX) || 0,
             y: event.pageY || (event.touches && event.touches[0].pageY) || 0,
