@@ -5,6 +5,7 @@ class LcsCnvs {
       limit: 50,
       list: [],
       themes: [
+        { colors: ["#25CE7B", "#DA38B5", "#FDC741", "#01B3E3", "#FF6B01"] },
         {
           colors: [
             "#f72585",
@@ -52,6 +53,15 @@ class LcsCnvs {
 
     this.document = this.window.document;
 
+    this.document.querySelectorAll("nav a").forEach((el) => {
+      el.addEventListener("mouseover", (event) => {
+        this.notHover = event.target.getBoundingClientRect();
+      });
+      el.addEventListener("mouseleave", () => {
+        delete this.notHover;
+      });
+    });
+
     this.canvas = this.document.createElement("canvas");
     this.canvas.width = this.window.innerWidth;
     this.canvas.height = this.window.innerHeight;
@@ -71,6 +81,27 @@ class LcsCnvs {
 
   /**
    *
+   * @param {*} vertexA
+   * @param {*} vertexB
+   */
+  getVerticesDistance(vertexA, vertexB) {
+    return Math.sqrt(
+      Math.pow(vertexA.x - vertexB.x, 2) + Math.pow(vertexA.y - vertexB.y, 2)
+    );
+  }
+
+  isHover(vertex) {
+    return (
+      this.notHover &&
+      vertex.x > this.notHover.x &&
+      vertex.x < this.notHover.x + this.notHover.width &&
+      vertex.y > this.notHover.y &&
+      vertex.y < this.notHover.y + this.notHover.height
+    );
+  }
+
+  /**
+   *
    * @param {*} area
    */
   getRandomVertex(position, distance) {
@@ -86,19 +117,11 @@ class LcsCnvs {
           position.y + distance
         ),
       };
-    } while (this.getVerticesDistance(position, vertex) > distance);
-    return vertex;
-  }
-
-  /**
-   *
-   * @param {*} vertexA
-   * @param {*} vertexB
-   */
-  getVerticesDistance(vertexA, vertexB) {
-    return Math.sqrt(
-      Math.pow(vertexA.x - vertexB.x, 2) + Math.pow(vertexA.y - vertexB.y, 2)
+    } while (
+      this.getVerticesDistance(position, vertex) > distance ||
+      this.isHover(vertex)
     );
+    return vertex;
   }
 
   /**
