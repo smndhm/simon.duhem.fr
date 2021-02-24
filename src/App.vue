@@ -169,6 +169,12 @@ nav ul {
       // Display
       margin: 0 1.5rem;
       // Decoration
+      &:hover {
+        // Font
+        text-decoration: underline;
+        // Display
+        // Decoration
+      }
     }
   }
 }
