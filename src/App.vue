@@ -6,7 +6,7 @@
   <nav>
     <ul>
       <li v-for="link in links" :key="link">
-        <a :href="link.href" v-html="link.title"></a>
+        <a :href="link.href" :aria-label="link.description" v-html="link.title"></a>
       </li>
     </ul>
   </nav>
@@ -26,8 +26,8 @@ export default {
   computed: {
     links() {
       return process.env.VUE_APP_LINKS.split("|").map((link) => {
-        const [title, href] = link.split("@");
-        return { title, href };
+        const [title, description, href] = link.split("@");
+        return { title, description, href };
       });
     },
   },

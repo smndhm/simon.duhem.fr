@@ -68,6 +68,10 @@ class LcsCnvs {
     this.canvas.id = "lcs-cnvs";
 
     this.ctx = this.canvas.getContext("2d");
+    
+    this.document.addEventListener("DOMContentLoaded", () => {
+      this.document.body.append(this.canvas);
+    });
   }
 
   /**
@@ -199,8 +203,6 @@ class LcsCnvs {
       this.ctx.fill();
       this.ctx.stroke();
     }
-
-    this.document.body.append(this.canvas);
   }
 }
 
