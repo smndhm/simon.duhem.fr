@@ -6,17 +6,21 @@
   <nav>
     <ul>
       <li v-for="link in links" :key="link">
-        <a :href="link.href" :aria-label="link.description" v-html="link.title"></a>
+        <a
+          :href="link.href"
+          :aria-label="link.description"
+          v-html="link.title"
+        ></a>
       </li>
     </ul>
   </nav>
 </template>
 
 <script>
-import LcsCnvs from "@/services/lcs-cnvs";
+import LcsCnvs from '@/services/lcs-cnvs';
 
 export default {
-  name: "Blu",
+  name: 'Blu',
   data() {
     return {
       title: process.env.VUE_APP_TITLE,
@@ -25,29 +29,31 @@ export default {
   },
   computed: {
     links() {
-      return process.env.VUE_APP_LINKS.split("|").map((link) => {
-        const [title, description, href] = link.split("@");
+      return process.env.VUE_APP_LINKS.split('|').map((link) => {
+        const [title, description, href] = link.split('@');
         return { title, description, href };
       });
     },
   },
   mounted() {
-    new LcsCnvs(window);
+    if (!window.matchMedia('(prefers-reduced-motion: reduce)')?.matches) {
+      new LcsCnvs(window);
+    }
   },
 };
 </script>
 
 <style lang="scss">
 // Normalize
-@import "../node_modules/normalize.css/normalize.css";
+@import '../node_modules/normalize.css/normalize.css';
 
 // Font
-@import url("https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;900&display=swap");
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;900&display=swap');
 
 // Variables
 :root {
   // Font
-  --font-primary: "Noto Sans SC", sans-serif;
+  --font-primary: 'Noto Sans SC', sans-serif;
   --font-size: 2rem;
   --font-weight: 400;
   --font-color: #000;
