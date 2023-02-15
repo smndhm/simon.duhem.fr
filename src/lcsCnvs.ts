@@ -34,7 +34,7 @@ class LcsCnvs {
     };
   #polygons: polygon[] = [];
   #window: Window;
-  #canvas;
+  #canvas: HTMLCanvasElement;
   #document: Document;
   #ctx: CanvasRenderingContext2D;
   #notHover: DOMRect | undefined;
